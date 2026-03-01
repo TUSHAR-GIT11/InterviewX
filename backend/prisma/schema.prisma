@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+
+  interviews Interview[]
+  tagPerformance UserTagPerformance[] 
+}
+
+model Question {
+  id          String     @id @default(uuid())
+  domain      Domain
+  difficulty  Difficulty
+  question    String
+  keywords    String[]
+  tags        String[]
+  weight      Int        @default(1)
+  createdAt   DateTime   @default(now())
+}
+
+model Interview {
+  id          String   @id @default(uuid())
+  userId      String
+  domain      Domain
+  difficulty  Difficulty
+  score       Int
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+  responses   Response[]
+}
+
+model Response {
+  id          String   @id @default(uuid())
+  interviewId String
+  questionId  String
+  answer      String
+  score       Int
+  feedback    String?
+  coveredConcepts String[]
+  missedConcepts  String[]
+
+  interview   Interview @relation(fields: [interviewId], references: [id])
+}
+model UserTagPerformance {
+  id        String   @id @default(uuid())
+  userId    String
+  tag       String
+  score     Int      @default(0)
+  attempts  Int      @default(0)
+
+  user      User     @relation(fields: [userId], references: [id])
+}
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Domain {
+  FRONTEND
+  BACKEND
+  HR
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
