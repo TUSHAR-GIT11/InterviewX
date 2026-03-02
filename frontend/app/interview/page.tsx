@@ -94,22 +94,26 @@ export default function Interview() {
     newAnswers[currentQuestionIndex] = answer
     setAnswers(newAnswers)
 
+    let newScores = [...scores]
+    let newFeedbacks = [...feedbacks]
+
     if (answer && answer.trim().length > 0) {
       try {
         const result = await submitAnswer({
           variables: {
             interviewId: interview.id,
             questionId: currentQuestion.id,
-            answer
+            answer,
+            questionText: currentQuestion.question,
+            keywords: currentQuestion.keywords,
+            difficulty: currentQuestion.difficulty
           }
         })
 
         if (result.data) {
-          const newScores = [...scores]
           newScores[currentQuestionIndex] = result.data.submitAnswer.score
           setScores(newScores)
           
-          const newFeedbacks = [...feedbacks]
           newFeedbacks[currentQuestionIndex] = {
             feedback: result.data.submitAnswer.feedback,
             coveredConcepts: result.data.submitAnswer.coveredConcepts,
@@ -121,7 +125,6 @@ export default function Interview() {
         console.error("Error submitting answer:", err)
       }
     } else {
-      const newFeedbacks = [...feedbacks]
       newFeedbacks[currentQuestionIndex] = {
         feedback: "Question skipped - no answer provided",
         coveredConcepts: [],
@@ -134,8 +137,8 @@ export default function Interview() {
 
     if (isLastQuestion) {
       localStorage.setItem("interviewAnswers", JSON.stringify(newAnswers))
-      localStorage.setItem("interviewScores", JSON.stringify(scores))
-      localStorage.setItem("interviewFeedbacks", JSON.stringify(feedbacks))
+      localStorage.setItem("interviewScores", JSON.stringify(newScores))
+      localStorage.setItem("interviewFeedbacks", JSON.stringify(newFeedbacks))
       localStorage.setItem("interviewDuration", timeElapsed.toString())
       router.push(`/results?interviewId=${interview.id}`)
     } else {

@@ -1,4 +1,4 @@
-// Advanced answer evaluation system with intelligent scoring
+// AI-powered answer evaluation using Grok API (xAI)
 
 export async function evaluateAnswer(question, answer, keywords, difficulty) {
   // Handle empty answers
@@ -11,10 +11,8 @@ export async function evaluateAnswer(question, answer, keywords, difficulty) {
     };
   }
 
-  const answerLower = answer.toLowerCase();
-  const answerWords = new Set(answerLower.split(/\W+/).filter(w => w.length > 2));
-  
   // Check for non-answers
+  const answerLower = answer.toLowerCase();
   const nonAnswers = ['dont know', "don't know", 'not sure', 'no idea', 'idk', 'dunno'];
   const isNonAnswer = nonAnswers.some(phrase => answerLower.includes(phrase)) && answer.length < 50;
   
@@ -27,7 +25,76 @@ export async function evaluateAnswer(question, answer, keywords, difficulty) {
     };
   }
 
-  // Advanced keyword matching with context
+  // Try Grok API first
+  try {
+    const grokApiKey = process.env.GROK_API_KEY;
+    
+    if (grokApiKey) {
+      const prompt = `You are an expert technical interviewer. Evaluate this interview answer.
+
+Question: ${question}
+Expected Keywords: ${keywords.join(", ")}
+Difficulty: ${difficulty}
+Candidate's Answer: ${answer}
+
+Provide evaluation in JSON format:
+{
+  "score": <0-100>,
+  "feedback": "<2-3 sentences with specific improvements>",
+  "coveredConcepts": ["<concept1>", "<concept2>"],
+  "missedConcepts": ["<concept1>", "<concept2>"]
+}
+
+Score based on: accuracy (40%), completeness (30%), keyword coverage (20%), clarity (10%)`;
+
+      const response = await fetch('https://api.x.ai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${grokApiKey}`
+        },
+        body: JSON.stringify({
+          messages: [
+            {
+              role: "system",
+              content: "You are an expert technical interviewer. Provide fair, constructive evaluations in valid JSON format only."
+            },
+            {
+              role: "user",
+              content: prompt
+            }
+          ],
+          model: "grok-4",
+          temperature: 0.3,
+          response_format: { type: "json_object" }
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const evaluation = JSON.parse(data.choices[0].message.content);
+        
+        return {
+          score: Math.min(Math.max(Math.round(evaluation.score), 0), 100),
+          feedback: evaluation.feedback,
+          coveredConcepts: evaluation.coveredConcepts || [],
+          missedConcepts: evaluation.missedConcepts || []
+        };
+      }
+    }
+  } catch (error) {
+    console.log("Grok API unavailable, using enhanced evaluation");
+  }
+
+  // Fallback to enhanced keyword evaluation
+  return enhancedKeywordEvaluation(question, answer, keywords, difficulty);
+}
+
+function enhancedKeywordEvaluation(question, answer, keywords, difficulty) {
+  const answerLower = answer.toLowerCase();
+  const answerWords = new Set(answerLower.split(/\W+/).filter(w => w.length > 2));
+  
+  // Advanced keyword matching
   const coveredConcepts = [];
   const missedConcepts = [];
   let keywordMatchScore = 0;
@@ -36,19 +103,18 @@ export async function evaluateAnswer(question, answer, keywords, difficulty) {
     const keywordLower = keyword.toLowerCase();
     const keywordParts = keywordLower.split(/\W+/).filter(w => w.length > 2);
     
-    // Check for exact phrase match (highest weight)
+    // Exact phrase match
     if (answerLower.includes(keywordLower)) {
       coveredConcepts.push(keyword);
       keywordMatchScore += 1.0;
       return;
     }
     
-    // Check for partial match with context
+    // Partial match
     const matchedParts = keywordParts.filter(part => {
-      // Check if the word or its variations exist
       return Array.from(answerWords).some(answerWord => {
         return answerWord.includes(part) || part.includes(answerWord) ||
-               levenshteinDistance(answerWord, part) <= 2; // Allow typos
+               levenshteinDistance(answerWord, part) <= 2;
       });
     });
     
@@ -58,7 +124,6 @@ export async function evaluateAnswer(question, answer, keywords, difficulty) {
       coveredConcepts.push(keyword);
       keywordMatchScore += matchRatio;
     } else if (matchRatio >= 0.4) {
-      // Partial credit
       coveredConcepts.push(keyword);
       keywordMatchScore += matchRatio * 0.5;
     } else {
@@ -66,21 +131,16 @@ export async function evaluateAnswer(question, answer, keywords, difficulty) {
     }
   });
 
-  // Normalize keyword score
   const keywordScore = Math.min((keywordMatchScore / keywords.length) * 100, 100);
 
   // Content quality analysis
   const sentences = answer.split(/[.!?]+/).filter(s => s.trim().length > 10);
-  const avgSentenceLength = sentences.reduce((sum, s) => sum + s.split(/\s+/).length, 0) / Math.max(sentences.length, 1);
-  
-  // Quality indicators
   const hasExamples = /for example|such as|like|e\.g\.|i\.e\.|instance/i.test(answer);
   const hasExplanation = /because|since|therefore|thus|hence|so that|in order to/i.test(answer);
   const hasStructure = sentences.length >= 2;
   const hasProperLength = answer.length >= 100;
   const hasTechnicalDepth = answerWords.size >= 20;
   
-  // Calculate quality score
   let qualityScore = 0;
   if (hasExamples) qualityScore += 20;
   if (hasExplanation) qualityScore += 20;
@@ -88,7 +148,7 @@ export async function evaluateAnswer(question, answer, keywords, difficulty) {
   if (hasProperLength) qualityScore += 20;
   if (hasTechnicalDepth) qualityScore += 20;
 
-  // Difficulty-based length requirements
+  // Length score
   const minLengthByDifficulty = {
     'EASY': 80,
     'MEDIUM': 120,
@@ -108,20 +168,13 @@ export async function evaluateAnswer(question, answer, keywords, difficulty) {
     };
   }
 
-  // Calculate final score with weighted components
-  const weights = {
-    keyword: 0.50,    // 50% - Most important
-    quality: 0.30,    // 30% - Content quality
-    length: 0.20      // 20% - Completeness
-  };
-
+  // Final weighted score
   const finalScore = Math.round(
-    keywordScore * weights.keyword +
-    qualityScore * weights.quality +
-    lengthScore * weights.length
+    keywordScore * 0.50 +
+    qualityScore * 0.30 +
+    lengthScore * 0.20
   );
 
-  // Generate intelligent feedback
   const feedback = generateIntelligentFeedback(
     finalScore,
     keywordScore,
@@ -183,7 +236,6 @@ function generateIntelligentFeedback(
 ) {
   let feedback = "";
   
-  // Overall performance
   if (score >= 90) {
     feedback = "Outstanding answer! You demonstrated excellent understanding with comprehensive coverage and clear explanations. ";
   } else if (score >= 80) {
@@ -198,7 +250,6 @@ function generateIntelligentFeedback(
     feedback = "Insufficient answer. Please review the topic thoroughly and provide comprehensive explanations. ";
   }
 
-  // Specific improvements needed
   const improvements = [];
   
   if (keywordScore < 60 && missedConcepts.length > 0) {
@@ -225,7 +276,6 @@ function generateIntelligentFeedback(
     feedback += "To improve: " + improvements.join("; ") + ". ";
   }
 
-  // Positive reinforcement
   if (coveredConcepts.length > 0) {
     feedback += `Strong points: ${coveredConcepts.slice(0, 3).join(", ")}.`;
   }

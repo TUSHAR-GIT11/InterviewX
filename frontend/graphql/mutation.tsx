@@ -44,8 +44,8 @@ export const START_INTERVIEW = gql`
 `;
 
 export const SUBMIT_ANSWER = gql`
-  mutation SubmitAnswer($interviewId: String!, $questionId: String!, $answer: String!) {
-    submitAnswer(interviewId: $interviewId, questionId: $questionId, answer: $answer) {
+  mutation SubmitAnswer($interviewId: String!, $questionId: String!, $answer: String!, $questionText: String, $keywords: [String!], $difficulty: Difficulty) {
+    submitAnswer(interviewId: $interviewId, questionId: $questionId, answer: $answer, questionText: $questionText, keywords: $keywords, difficulty: $difficulty) {
       id
       score
       feedback

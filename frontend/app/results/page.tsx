@@ -36,6 +36,7 @@ export default function Results() {
   const [scores, setScores] = useState<number[]>([])
   const [feedbacks, setFeedbacks] = useState<any[]>([])
   const [summary, setSummary] = useState<any>(null)
+  const [expandedQuestion, setExpandedQuestion] = useState<number | null>(0)
 
   const [finishInterview, { loading }] = useMutation<FinishInterviewData>(FINISH_INTERVIEW)
 
@@ -61,7 +62,6 @@ export default function Results() {
       setScores(scoresData)
       setFeedbacks(feedbacksData)
 
-      // Finish interview and get summary
       try {
         const result = await finishInterview({
           variables: { interviewId }
@@ -79,7 +79,7 @@ export default function Results() {
 
   if (!interview || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-indigo-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Analyzing your performance...</p>
@@ -89,23 +89,19 @@ export default function Results() {
   }
 
   const totalScore = scores.reduce((sum, score) => sum + score, 0)
-  const maxPossibleScore = interview.questions.reduce(
-    (sum, q) => sum + (q.keywords.length * 1), 
-    0
-  )
-  const percentage = summary ? summary.percentage : (totalScore / maxPossibleScore) * 100
+  const maxPossibleScore = interview.questions.length * 100
+  const percentage = maxPossibleScore > 0 ? (totalScore / maxPossibleScore) * 100 : 0
 
   const getGrade = (percent: number) => {
-    if (percent >= 90) return { grade: "A+", color: "text-green-600", bg: "bg-green-100" }
-    if (percent >= 80) return { grade: "A", color: "text-green-600", bg: "bg-green-100" }
-    if (percent >= 70) return { grade: "B", color: "text-blue-600", bg: "bg-blue-100" }
-    if (percent >= 60) return { grade: "C", color: "text-yellow-600", bg: "bg-yellow-100" }
-    return { grade: "D", color: "text-red-600", bg: "bg-red-100" }
+    if (percent >= 90) return { grade: "A+", color: "text-green-600", bg: "bg-green-100", ring: "ring-green-200" }
+    if (percent >= 80) return { grade: "A", color: "text-green-600", bg: "bg-green-100", ring: "ring-green-200" }
+    if (percent >= 70) return { grade: "B", color: "text-blue-600", bg: "bg-blue-100", ring: "ring-blue-200" }
+    if (percent >= 60) return { grade: "C", color: "text-yellow-600", bg: "bg-yellow-100", ring: "ring-yellow-200" }
+    return { grade: "D", color: "text-red-600", bg: "bg-red-100", ring: "ring-red-200" }
   }
 
   const gradeInfo = getGrade(percentage)
 
-  // Analyze weak areas
   const questionAnalysis = interview.questions.map((q, index) => {
     const feedback = feedbacks[index] || {}
     const answerText = answers[index] || ""
@@ -130,73 +126,93 @@ export default function Results() {
     localStorage.removeItem("currentInterview")
     localStorage.removeItem("interviewAnswers")
     localStorage.removeItem("interviewScores")
+    localStorage.removeItem("interviewFeedbacks")
     router.push("/dashboard")
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <nav className="bg-white shadow-sm">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <nav className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <h1 className="text-2xl font-bold text-indigo-600">InterviewX</h1>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-xl">IX</span>
+            </div>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              Interview Results
+            </h1>
+          </div>
         </div>
       </nav>
 
       <div className="max-w-6xl mx-auto px-4 py-12">
         {/* Score Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-6">
-          <div className="text-center mb-8">
-            <div className={`w-32 h-32 ${gradeInfo.bg} rounded-full flex items-center justify-center mx-auto mb-4`}>
-              <span className={`text-5xl font-bold ${gradeInfo.color}`}>{gradeInfo.grade}</span>
+        <div className="bg-white rounded-2xl shadow-xl p-8 mb-6 border border-gray-100">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-6">
+              <div className={`w-24 h-24 ${gradeInfo.bg} rounded-2xl flex items-center justify-center ring-4 ${gradeInfo.ring}`}>
+                <span className={`text-4xl font-bold ${gradeInfo.color}`}>{gradeInfo.grade}</span>
+              </div>
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-1">Interview Complete!</h2>
+                <p className="text-lg text-gray-600">You scored {percentage.toFixed(1)}%</p>
+              </div>
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Interview Complete!</h2>
-            <p className="text-xl text-gray-600">You scored {percentage.toFixed(1)}%</p>
+            <div className="text-right">
+              <div className="text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                {totalScore}
+              </div>
+              <div className="text-sm text-gray-500">out of {maxPossibleScore}</div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-6 mb-8">
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-gray-600 mb-1">Total Score</p>
-              <p className="text-3xl font-bold text-indigo-600">{totalScore}</p>
-              <p className="text-xs text-gray-500">out of {maxPossibleScore}</p>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
+              <div className="text-sm text-blue-700 mb-1">Questions Answered</div>
+              <div className="text-3xl font-bold text-blue-900">{interview.questions.length}</div>
             </div>
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <p className="text-sm text-gray-600 mb-1">Questions</p>
-              <p className="text-3xl font-bold text-green-600">{interview.questions.length}</p>
-              <p className="text-xs text-gray-500">answered</p>
+            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
+              <div className="text-sm text-green-700 mb-1">Average Score</div>
+              <div className="text-3xl font-bold text-green-900">{(totalScore / interview.questions.length).toFixed(0)}</div>
             </div>
-            <div className="text-center p-4 bg-purple-50 rounded-lg">
-              <p className="text-sm text-gray-600 mb-1">Accuracy</p>
-              <p className="text-3xl font-bold text-purple-600">{percentage.toFixed(0)}%</p>
-              <p className="text-xs text-gray-500">overall</p>
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
+              <div className="text-sm text-purple-700 mb-1">Performance</div>
+              <div className="text-3xl font-bold text-purple-900">
+                {percentage >= 60 ? "Pass ✓" : "Review"}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Weak Areas Analysis */}
+        {/* Weak Areas */}
         {weakQuestions.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-xl p-8 mb-6">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Areas for Improvement</h3>
-            <p className="text-gray-600 mb-6">
-              Focus on these topics to strengthen your knowledge
-            </p>
-            <div className="space-y-4">
+          <div className="bg-white rounded-2xl shadow-xl p-8 mb-6 border border-gray-100">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                <span className="text-xl">⚠️</span>
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900">Areas for Improvement</h3>
+                <p className="text-gray-600">Focus on these topics to strengthen your knowledge</p>
+              </div>
+            </div>
+            <div className="space-y-3">
               {weakQuestions.map((qa, index) => (
-                <div key={index} className="border border-red-200 bg-red-50 rounded-lg p-4">
-                  <div className="flex items-start justify-between mb-2">
-                    <h4 className="font-semibold text-gray-900 flex-1">{qa.question.question}</h4>
-                    <span className="text-red-600 font-bold ml-4">{qa.percentage.toFixed(0)}%</span>
-                  </div>
-                  <div className="mb-2">
-                    <p className="text-sm text-gray-600 mb-1">Missed Concepts:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {qa.missedConcepts.map((concept, i) => (
-                        <span key={i} className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs">
-                          {concept}
-                        </span>
-                      ))}
+                <div key={index} className="bg-red-50 border-l-4 border-red-500 rounded-r-lg p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-900 mb-2">{qa.question.question}</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {qa.missedConcepts.map((concept, i) => (
+                          <span key={i} className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">
+                            {concept}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-700 italic">"{qa.feedback}"</p>
+                    <div className="ml-4 text-right">
+                      <div className="text-2xl font-bold text-red-600">{qa.percentage}%</div>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -205,98 +221,147 @@ export default function Results() {
         )}
 
         {/* Detailed Analysis */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-6">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Detailed Analysis</h3>
-          <div className="space-y-6">
+        <div className="bg-white rounded-2xl shadow-xl p-8 mb-6 border border-gray-100">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+              <span className="text-xl">📊</span>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900">Detailed Analysis</h3>
+          </div>
+          
+          <div className="space-y-4">
             {questionAnalysis.map((qa, index) => (
-              <div key={index} className="border border-gray-200 rounded-lg p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-sm font-medium text-gray-500">Q{index + 1}</span>
-                      <span className="px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs">
-                        {qa.question.domain}
-                      </span>
-                      <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">
-                        {qa.question.difficulty}
-                      </span>
+              <div key={index} className="border border-gray-200 rounded-xl overflow-hidden">
+                <button
+                  onClick={() => setExpandedQuestion(expandedQuestion === index ? null : index)}
+                  className="w-full p-6 bg-gray-50 hover:bg-gray-100 transition flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-4 flex-1 text-left">
+                    <div className={`w-16 h-16 rounded-xl flex items-center justify-center font-bold text-xl ${
+                      qa.percentage >= 80 ? 'bg-green-100 text-green-700' :
+                      qa.percentage >= 60 ? 'bg-blue-100 text-blue-700' :
+                      qa.percentage >= 40 ? 'bg-yellow-100 text-yellow-700' :
+                      'bg-red-100 text-red-700'
+                    }`}>
+                      {qa.score}
                     </div>
-                    <h4 className="font-semibold text-gray-900 mb-2">{qa.question.question}</h4>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-xs font-semibold text-gray-500">Q{index + 1}</span>
+                        <span className="px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs font-medium">
+                          {qa.question.domain}
+                        </span>
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${
+                          qa.question.difficulty === "EASY" ? "bg-green-100 text-green-700" :
+                          qa.question.difficulty === "MEDIUM" ? "bg-yellow-100 text-yellow-700" :
+                          "bg-red-100 text-red-700"
+                        }`}>
+                          {qa.question.difficulty}
+                        </span>
+                      </div>
+                      <h4 className="font-semibold text-gray-900">{qa.question.question}</h4>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm text-gray-500">Score</div>
+                      <div className="text-2xl font-bold text-gray-900">{qa.percentage}%</div>
+                    </div>
                   </div>
-                  <div className="text-right ml-4">
-                    <p className="text-2xl font-bold text-indigo-600">{qa.score}/{qa.maxScore}</p>
-                    <p className="text-sm text-gray-500">{qa.percentage.toFixed(0)}%</p>
-                  </div>
-                </div>
+                  <svg 
+                    className={`w-6 h-6 text-gray-400 transition-transform ${expandedQuestion === index ? 'rotate-180' : ''}`}
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
 
-                <div className="mb-4">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Your Answer:</p>
-                  <p className={`text-sm p-3 rounded ${qa.isAnswered ? 'text-gray-600 bg-gray-50' : 'text-red-600 bg-red-50'}`}>
-                    {qa.answer || "No answer provided"}
-                  </p>
-                </div>
+                {expandedQuestion === index && (
+                  <div className="p-6 bg-white border-t border-gray-200">
+                    <div className="space-y-6">
+                      {/* Your Answer */}
+                      <div>
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-lg">✍️</span>
+                          <h5 className="font-semibold text-gray-900">Your Answer</h5>
+                        </div>
+                        <div className={`p-4 rounded-lg ${qa.isAnswered ? 'bg-gray-50 border border-gray-200' : 'bg-red-50 border border-red-200'}`}>
+                          <p className={`text-sm ${qa.isAnswered ? 'text-gray-700' : 'text-red-700'}`}>
+                            {qa.answer || "No answer provided"}
+                          </p>
+                        </div>
+                      </div>
 
-                {qa.isAnswered && (
-                  <div className="mb-4 bg-blue-50 p-3 rounded">
-                    <p className="text-sm font-medium text-blue-900 mb-1">AI Feedback:</p>
-                    <p className="text-sm text-blue-800 italic">{qa.feedback}</p>
+                      {/* AI Feedback */}
+                      {qa.isAnswered && (
+                        <div>
+                          <div className="flex items-center gap-2 mb-3">
+                            <span className="text-lg">🤖</span>
+                            <h5 className="font-semibold text-gray-900">AI Feedback</h5>
+                          </div>
+                          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <p className="text-sm text-blue-900 leading-relaxed">{qa.feedback}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Concepts */}
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                          <div className="flex items-center gap-2 mb-3">
+                            <span className="text-lg">✅</span>
+                            <h5 className="font-semibold text-green-700">Covered Concepts</h5>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {qa.coveredConcepts.length > 0 ? (
+                              qa.coveredConcepts.map((concept, i) => (
+                                <span key={i} className="px-3 py-1.5 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
+                                  {concept}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-sm text-gray-500 italic">None</span>
+                            )}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2 mb-3">
+                            <span className="text-lg">❌</span>
+                            <h5 className="font-semibold text-red-700">Missed Concepts</h5>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {qa.missedConcepts.length > 0 ? (
+                              qa.missedConcepts.map((concept, i) => (
+                                <span key={i} className="px-3 py-1.5 bg-red-100 text-red-700 rounded-lg text-sm font-medium">
+                                  {concept}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-sm text-gray-500 italic">None</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
-
-                {!qa.isAnswered && (
-                  <div className="mb-4 bg-red-50 p-3 rounded">
-                    <p className="text-sm font-medium text-red-900 mb-1">⚠️ Skipped Question</p>
-                    <p className="text-sm text-red-800">You did not provide an answer for this question.</p>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm font-medium text-green-700 mb-2">Covered Concepts:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {qa.coveredConcepts.length > 0 ? (
-                        qa.coveredConcepts.map((concept, i) => (
-                          <span key={i} className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">
-                            ✓ {concept}
-                          </span>
-                        ))
-                      ) : (
-                        <span className="text-xs text-gray-500">None</span>
-                      )}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-red-700 mb-2">Missed Concepts:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {qa.missedConcepts.length > 0 ? (
-                        qa.missedConcepts.map((concept, i) => (
-                          <span key={i} className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs">
-                            ✗ {concept}
-                          </span>
-                        ))
-                      ) : (
-                        <span className="text-xs text-gray-500">None</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
               </div>
             ))}
           </div>
         </div>
 
         {/* Actions */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
           <div className="flex gap-4">
             <button
               onClick={handleNewInterview}
-              className="flex-1 bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition"
+              className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 rounded-xl font-semibold text-lg hover:from-indigo-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl"
             >
               Start New Interview
             </button>
             <button
               onClick={() => router.push("/dashboard")}
-              className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
+              className="flex-1 bg-gray-100 text-gray-700 py-4 rounded-xl font-semibold text-lg hover:bg-gray-200 transition"
             >
               Back to Dashboard
             </button>

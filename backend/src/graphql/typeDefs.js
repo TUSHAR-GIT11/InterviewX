@@ -62,7 +62,7 @@ const typeDefs = gql`
     login(email: String!, password: String!): AuthPayload
     signup(name: String!, email: String!, password: String!): AuthPayload
     startInterview(domain:Domain!,difficulty:Difficulty!,count:Int!):InterviewSession!
-    submitAnswer(interviewId:String!,questionId:String!,answer:String!):AnswerResponse!
+    submitAnswer(interviewId:String!,questionId:String!,answer:String!,questionText:String,keywords:[String!],difficulty:Difficulty):AnswerResponse!
     finishInterview(interviewId:String!):InterviewSummary!
   }
 `;

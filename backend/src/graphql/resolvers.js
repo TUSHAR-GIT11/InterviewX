@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { generateQuestions } from "../services/questionEngine.js";
 import { evaluateAnswer } from "../services/aiEvaluator.js";
-import crypto from "crypto"
+import { evaluateAnswerWithGemini } from "../services/geminiEvaluator.js";
 const resolvers = {
   Query: {
     hello: () => "InterviewX GraphQL API Running 🚀",
@@ -132,15 +132,24 @@ const resolvers = {
         if(!context.user){
           throw new Error("Not Authenticated")
         }
-        const questions = await generateQuestions(domain,difficulty,count,context.user.userId)
         
-        // Create interview record in database
+        console.log("\n🚀 ========== STARTING INTERVIEW ==========");
+        console.log(`📋 Domain: ${domain}, Difficulty: ${difficulty}, Count: ${count}`);
+        
+        // Get questions from database
+        const questions = await generateQuestions(domain, difficulty, count, context.user.userId);
+        
+        console.log(`✅ Loaded ${questions.length} questions from database`);
+        console.log("==============================================\n");
+        
+        // Create interview record with question IDs
         const interview = await prisma.interview.create({
           data: {
             userId: context.user.userId,
             domain,
             difficulty,
-            score: 0
+            score: 0,
+            questionIds: questions.map(q => q.id)
           }
         })
         
@@ -149,27 +158,53 @@ const resolvers = {
           questions
         }
     },
-    submitAnswer:async(_,{interviewId,questionId,answer},context)=>{
+    submitAnswer:async(_,{interviewId,questionId,answer,questionText,keywords,difficulty},context)=>{
       if(!context.user){
         throw new Error("Not authenticated")
       }
       
-      const question = await prisma.question.findUnique({where:{id:questionId}})
-      if(!question){
-        throw new Error("Question not found")
+      // First try to find question in database (for legacy questions)
+      let question = await prisma.question.findUnique({where:{id:questionId}})
+      
+      // If not found in DB, it's an AI-generated question - use provided data
+      if (!question) {
+        if (!questionText || !keywords || !difficulty) {
+          throw new Error("For AI-generated questions, questionText, keywords, and difficulty are required");
+        }
+        question = {
+          id: questionId,
+          question: questionText,
+          keywords: keywords,
+          difficulty: difficulty,
+          tags: keywords // Use keywords as tags for AI questions
+        };
       }
 
-      // Use AI to evaluate the answer
-      const evaluation = await evaluateAnswer(
-        question.question,
-        answer,
-        question.keywords,
-        question.difficulty
-      )
+      // Use Gemini AI for evaluation (prioritize strict evaluation)
+      let evaluation;
+      try {
+        evaluation = await evaluateAnswerWithGemini(
+          question.question,
+          answer,
+          question.keywords,
+          question.difficulty
+        );
+        console.log("✅ Using Gemini AI evaluation - strict relevance checking");
+      } catch (error) {
+        console.log("⚠️  Gemini AI unavailable, using fallback evaluation");
+        // Fallback to basic evaluation
+        evaluation = await evaluateAnswer(
+          question.question,
+          answer,
+          question.keywords,
+          question.difficulty
+        );
+      }
 
       const score = evaluation.score
 
       // Save response with AI feedback
+      console.log(`💾 Saving response for question ${questionId}...`);
       const response = await prisma.response.create({
         data:{
           interviewId,
@@ -181,33 +216,36 @@ const resolvers = {
           missedConcepts: evaluation.missedConcepts
         }
       })
+      console.log(`✅ Response saved with ID: ${response.id}, Score: ${score}`);
 
-      // Update user tag performance
-      for(const tag of question.tags){
-        const existing = await prisma.userTagPerformance.findFirst({
-          where:{
-            userId:context.user.userId,
-            tag
-          }
-        })
-
-        if(existing){
-          await prisma.userTagPerformance.update({
-            where:{id:existing.id},
-            data:{
-              score:existing.score + score,
-              attempts:existing.attempts + 1
-            }
-          })
-        } else {
-          await prisma.userTagPerformance.create({
-            data:{
+      // Update user tag performance (only for DB questions with proper tags)
+      if (question.tags && Array.isArray(question.tags)) {
+        for(const tag of question.tags){
+          const existing = await prisma.userTagPerformance.findFirst({
+            where:{
               userId:context.user.userId,
-              tag,
-              score,
-              attempts:1
+              tag
             }
           })
+
+          if(existing){
+            await prisma.userTagPerformance.update({
+              where:{id:existing.id},
+              data:{
+                score:existing.score + score,
+                attempts:existing.attempts + 1
+              }
+            })
+          } else {
+            await prisma.userTagPerformance.create({
+              data:{
+                userId:context.user.userId,
+                tag,
+                score,
+                attempts:1
+              }
+            })
+          }
         }
       }
 
@@ -223,27 +261,63 @@ const resolvers = {
       if(!context.user){
         throw new Error("Not authenticated")
       }
+      
+      console.log(`\n📊 ========== FINISHING INTERVIEW ==========`);
+      console.log(`Interview ID: ${interviewId}`);
+      
       const responses = await prisma.response.findMany({where:{interviewId}})
+      console.log(`Found ${responses.length} responses`);
+      
+      // If no responses (user skipped all questions), return zeros
       if(responses.length === 0){
-        throw new Error("No response found")
+        console.log("⚠️  No responses found - user skipped all questions");
+        
+        // Update interview with score 0
+        await prisma.interview.update({
+          where: { id: interviewId },
+          data: { score: 0 }
+        })
+        
+        console.log(`✅ Interview finished with 0 score (all skipped)`);
+        console.log("==============================================\n");
+        
+        return {
+          totalQuestion: 0,
+          totalScore: 0,
+          percentage: 0
+        }
       }
+      
       const totalScore = responses.reduce((sum,r)=>sum + r.score,0)
       const totalQuestion = responses.length;
+      
+      console.log(`Total questions answered: ${totalQuestion}`);
+      console.log(`Total score: ${totalScore}`);
+      
       const questions = await prisma.question.findMany({
         where:{
           id:{ in:responses.map(r=>r.questionId) }
         }
       })
+      
+      console.log(`Found ${questions.length} questions in database`);
+      
       const maxScore = questions.reduce(
         (sum,q)=> sum + (q.keywords.length * q.weight),0
       )
-      const percentage = (totalScore/maxScore)*100;
+      const percentage = maxScore > 0 ? (totalScore/maxScore)*100 : 0;
+      
+      console.log(`Max possible score: ${maxScore}`);
+      console.log(`Percentage: ${percentage.toFixed(2)}%`);
       
       // Update interview with final score
       await prisma.interview.update({
         where: { id: interviewId },
         data: { score: totalScore }
       })
+      
+      console.log(`✅ Interview finished successfully`);
+      console.log("==============================================\n");
       
       return {
         totalQuestion,
