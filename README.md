@@ -55,14 +55,7 @@ cd ../frontend
 npm install
 ```
 
-4. Set up environment variables
 
-Create `backend/.env`:
-```env
-DATABASE_URL="postgresql://username:password@localhost:5432/interviewx"
-JWT_SECRET="your-secret-key"
-OPENAI_API_KEY="your-openai-key" # Optional
-```
 
 5. Run database migrations
 ```bash

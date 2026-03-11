@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useMutation, useQuery } from "@apollo/client/react"
 import { START_INTERVIEW } from "../../graphql/mutation"
-import { GET_USER_STATS } from "../../graphql/queries"
+import { GET_ME, GET_USER_STATS } from "../../graphql/queries"
 import { useRouter } from "next/navigation"
 
 interface Question {
@@ -21,6 +21,25 @@ interface StartInterviewData {
   }
 }
 
+interface UserStats {
+  totalInterviews: number
+  avgScore: number
+  streak: number
+}
+
+interface GetUserStats {
+  getUserStats: UserStats
+}
+
+interface GetMe {
+  getMe: {
+    id: string
+    name: string
+    email: string
+    role: string
+  }
+}
+
 export default function Dashboard() {
   const router = useRouter()
   const [domain, setDomain] = useState<string>("FRONTEND")
@@ -28,16 +47,23 @@ export default function Dashboard() {
   const [count, setCount] = useState<number>(5)
   const [userName, setUserName] = useState<string>("")
 
-  const { data: statsData, loading: statsLoading } = useQuery(GET_USER_STATS)
+  useEffect(() => {
+    const token = localStorage.getItem("token")
+    if (!token) {
+      router.push("/login")
+      return
+    }
+  }, [router])
+
+  const { data: meData } = useQuery<GetMe>(GET_ME)
+  const { data: statsData, loading: statsLoading } = useQuery<GetUserStats>(GET_USER_STATS)
   const [startInterview, { loading, error }] = useMutation<StartInterviewData>(START_INTERVIEW)
 
   useEffect(() => {
-    const user = localStorage.getItem("user")
-    if (user) {
-      const userData = JSON.parse(user)
-      setUserName(userData.name)
+    if (meData?.getMe?.name) {
+      setUserName(meData.getMe.name)
     }
-  }, [])
+  }, [meData])
 
   const handleStartInterview = async () => {
     try {
@@ -87,11 +113,12 @@ export default function Dashboard() {
             <div className="flex items-center gap-4">
               <div className="text-right">
                 <p className="text-sm text-gray-600">Welcome back,</p>
-                <p className="font-semibold text-gray-900">{userName}</p>
+                <p className="font-semibold text-gray-900">{userName || "..."}</p>
               </div>
               <button
                 onClick={() => {
-                  localStorage.clear()
+                  localStorage.removeItem("token")
+                  localStorage.removeItem("user")
                   router.push("/login")
                 }}
                 className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition"

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useMutation } from "@apollo/client/react"
 import { SIGNUP } from "../../graphql/mutation"
 import { useRouter } from "next/navigation"
@@ -23,6 +23,13 @@ export default function Signup() {
   const [password, setPassword] = useState("")
   
   const [signup, { data, loading, error }] = useMutation<SignupData>(SIGNUP)
+
+  useEffect(() => {
+    const token = localStorage.getItem("token")
+    if (token) {
+      router.push("/dashboard")
+    }
+  }, [router])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

@@ -50,6 +50,7 @@ const typeDefs = gql`
   type Query {
     hello: String
     getUserStats: UserStats!
+    getMe: User  
   }
 
   type UserStats {

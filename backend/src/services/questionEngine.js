@@ -1,6 +1,6 @@
 import prisma from "../prismaClient.js";
 export async function generateQuestions(domain, difficulty, count, userId) {
-  // Get recently asked questions (last 3 interviews)
+
   const recentInterviews = await prisma.interview.findMany({
     where: { userId },
     orderBy: { createdAt: 'desc' },
@@ -21,7 +21,7 @@ export async function generateQuestions(domain, difficulty, count, userId) {
 
   let questions;
 
-  // Try to get questions from weak areas first, excluding recent ones
+  
   if (weakTagNames.length > 0) {
     questions = await prisma.question.findMany({
       where: {
@@ -34,11 +34,11 @@ export async function generateQuestions(domain, difficulty, count, userId) {
           notIn: recentQuestionIds
         }
       },
-      distinct: ['question'] // Ensure unique questions
+      distinct: ['question'] 
     });
   }
+
   
-  // If not enough questions, get all questions excluding recent ones
   if (!questions || questions.length < count) {
     questions = await prisma.question.findMany({
       where: { 
@@ -52,7 +52,7 @@ export async function generateQuestions(domain, difficulty, count, userId) {
     });
   }
 
-  // If still not enough (user has done all questions), allow repeats
+
   if (questions.length < count) {
     questions = await prisma.question.findMany({
       where: { domain, difficulty },
@@ -66,7 +66,7 @@ export async function generateQuestions(domain, difficulty, count, userId) {
 
   console.log(`Found ${questions.length} questions for ${domain} ${difficulty}`);
 
-  // Create a Map to ensure uniqueness by question text
+
   const questionMap = new Map();
   questions.forEach(q => {
     if (!questionMap.has(q.question)) {
@@ -74,11 +74,10 @@ export async function generateQuestions(domain, difficulty, count, userId) {
     }
   });
 
-  // Convert back to array and shuffle
+  
   const uniqueQuestions = Array.from(questionMap.values());
   const shuffled = uniqueQuestions.sort(() => 0.5 - Math.random());
-  
-  // Take only the requested count
+
   const selected = shuffled.slice(0, Math.min(count, shuffled.length));
   
   console.log(`Selected ${selected.length} unique questions`);

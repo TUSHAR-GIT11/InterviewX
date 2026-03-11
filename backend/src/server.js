@@ -19,8 +19,8 @@ const { url } = await startStandaloneServer(server, {
      if(!authHeader) return {}
      try{
            const token = authHeader.replace("Bearer ","")
-           const decoded = jwt.verify(token,process.env.JWT_SECRET)
-           return {user:decoded}
+           const decoded = jwt.verify(token, process.env.JWT_SECRET)
+           return {user: decoded}
 
      }catch(err){
           return {}
