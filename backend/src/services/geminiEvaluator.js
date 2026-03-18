@@ -1,4 +1,3 @@
-// Google Gemini AI-powered answer evaluation
 
 export async function evaluateAnswerWithGemini(question, answer, keywords, difficulty) {
   const geminiApiKey = process.env.GEMINI_API_KEY;

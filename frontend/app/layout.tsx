@@ -3,6 +3,7 @@
 import { ApolloProvider } from "@apollo/client/react";
 import client from "../lib/apolloClient";
 import "./globals.css";
+import { ThemeProvider } from "@/ThemeProvider";
 
 export default function RootLayout({
   children,
@@ -13,7 +14,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ApolloProvider client={client}>
-          {children}
+          <ThemeProvider>
+             {children}
+          </ThemeProvider>
         </ApolloProvider>
       </body>
     </html>

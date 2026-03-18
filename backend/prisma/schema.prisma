@@ -16,7 +16,8 @@ model User {
   createdAt DateTime @default(now())
 
   interviews Interview[]
-  tagPerformance UserTagPerformance[] 
+  tagPerformance UserTagPerformance[]
+  achievements UserAchievement[]
 }
 
 model Question {
@@ -64,6 +65,28 @@ model UserTagPerformance {
 
   user      User     @relation(fields: [userId], references: [id])
 }
+
+model Achievement {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String
+  icon        String
+  category    String
+  createdAt   DateTime @default(now())
+
+  userAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(uuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+  user          User        @relation(fields: [userId], references: [id])
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+  @@unique([userId, achievementId])
+}
+
 enum Role {
   USER
   ADMIN

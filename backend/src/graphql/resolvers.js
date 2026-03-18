@@ -4,6 +4,17 @@ import jwt from "jsonwebtoken";
 import { generateQuestions } from "../services/questionEngine.js";
 import { evaluateAnswer } from "../services/aiEvaluator.js";
 import { evaluateAnswerWithGemini } from "../services/geminiEvaluator.js";
+import { checkAndUnlockAchievements } from "../services/achievementChecker.js";
+
+const requireAdmin = (user) => {
+  if (!user) {
+    throw new Error('Authentication required')
+  }
+  if (user.role !== 'ADMIN') {
+    throw new Error('Admin access required')
+  }
+}
+
 const resolvers = {
   Query: {
     hello: () => "InterviewX GraphQL API Running 🚀",
@@ -66,21 +77,122 @@ const resolvers = {
         streak
       };
     },
-    getMe: async(_, __, context) => {
-       if (!context.user) {
-          throw new Error("Not authenticated")
-       }
+    getMe: async (_, __, context) => {
+      if (!context.user) {
+        throw new Error("Not authenticated")
+      }
 
-       const user = await prisma.user.findUnique({
-         where: { id: context.user.userId }
-       })
-       
-       if (!user) {
-         throw new Error("User not found")
-       }
-       
-       return user
+      const user = await prisma.user.findUnique({
+        where: { id: context.user.userId }
+      })
+
+      if (!user) {
+        throw new Error("User not found")
+      }
+
+      return user
+    },
+    getInterviewHistory: async (_, __, context) => {
+      if (!context.user) {
+        throw new Error("Not authenticated")
+      }
+
+      console.log("🔍 User ID:", context.user.userId)
+
+      const interviews = await prisma.interview.findMany({
+        where: { userId: context.user.userId },
+        include: { responses: true },
+        orderBy: { createdAt: 'desc' }
+      })
+
+      console.log("📊 Interviews found:", interviews.length)
+      console.log("📋 Interview data:", JSON.stringify(interviews, null, 2))
+
+      return interviews
+    },
+    getAllUsers: async (_, __, { user }) => {
+      requireAdmin(user)
+      const users = await prisma.user.findMany({
+        include: {
+          interviews: true
+        }
+      })
+      return users.map((u) => (
+        {
+          ...u,
+          totalInterviews: u.interviews.length,
+          avgScore: u.interviews.length > 0
+            ? Math.round(u.interviews.reduce((sum, interview) => sum + interview.score, 0) / u.interviews.length)
+            : 0
+        }
+      ))
+
+    },
+    getAdminStats: async (_, __, { user }) => {
+      requireAdmin(user)
+      const totalUsers = await prisma.user.count()
+
+      const totalQuestions = await prisma.question.count()
+
+      const interviews = await prisma.interview.findMany({
+        select: { score: true }
+      })
+
+
+      const totalInterviews = interviews.length
+
+
+      const avgScore = interviews.length > 0
+        ? Math.round(interviews.reduce((sum, interview) => sum + interview.score, 0) / interviews.length)
+        : 0
+
+
+      return {
+        totalUsers,
+        totalQuestions,
+        totalInterviews,
+        avgScore
+      }
+    },
+    getAllQuestions: async(_,__,{user})=>{
+      requireAdmin(user)
+      const questions = await prisma.question.findMany({
+        select:{ 
+          id:true,
+          domain:true,
+          difficulty:true,
+          question:true,
+          keywords:true,
+          tags:true,
+          weight:true,
+          createdAt:true
+         },
+         orderBy:{ createdAt:"desc" }
+      })
+      return questions
+    },
+    getUserAchievements: async(_,__,context)=>{
+      if(!context.user){
+        throw new Error("Not authenticated")
+      }
+
+      const userAchievements = await prisma.userAchievement.findMany({
+        where:{ userId:context.user.userId },
+        include:{ achievement:true },
+        orderBy:{ unlockedAt:"desc" }
+      })
+      
+      return userAchievements.map(ua => ({
+        ...ua,
+        unlockedAt: ua.unlockedAt.toISOString()
+      }))
+    },
+    getAllAchievements: async()=>{
+      return await prisma.achievement.findMany({
+        orderBy:{ category:'asc' }
+      })
     }
+
   },
 
   Mutation: {
@@ -327,15 +439,30 @@ const resolvers = {
         data: { score: totalScore }
       })
 
+      // Check and unlock achievements
+      const newAchievements = await checkAndUnlockAchievements(
+        context.user.userId,
+        Math.round(percentage)
+      );
+
+      console.log(`🏆 Unlocked ${newAchievements.length} new achievements`);
+      newAchievements.forEach(ach => {
+        console.log(`   ${ach.icon} ${ach.name}`);
+      });
+
       console.log(`✅ Interview finished successfully`);
       console.log("==============================================\n");
 
       return {
         totalQuestion,
         totalScore,
-        percentage
+        percentage,
+        newAchievements: newAchievements.map(ach=>({
+          ...ach,
+          createdAt: ach.createdAt.toISOString()
+        }))
       }
-    }
+    },
   },
 };
 

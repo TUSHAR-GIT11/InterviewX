@@ -69,10 +69,10 @@ export default function Interview() {
 
   if (!interview) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-indigo-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading interview...</p>
+          <p className="text-gray-600 dark:text-gray-400">Loading interview...</p>
         </div>
       </div>
     )
@@ -158,9 +158,9 @@ export default function Interview() {
   const wordCount = answer.trim().split(/\s+/).filter(w => w.length > 0).length
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
       {/* Header */}
-      <nav className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-200 sticky top-0 z-10">
+      <nav className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">
@@ -168,8 +168,8 @@ export default function Interview() {
                 <span className="text-white font-bold text-xl">IX</span>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Question {currentQuestionIndex + 1} of {interview.questions.length}</p>
-                <div className="w-48 h-2 bg-gray-200 rounded-full mt-1">
+                <p className="text-sm text-gray-600 dark:text-gray-400">Question {currentQuestionIndex + 1} of {interview.questions.length}</p>
+                <div className="w-48 h-2 bg-gray-200 dark:bg-gray-700 rounded-full mt-1">
                   <div 
                     className="h-full bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full transition-all duration-300"
                     style={{ width: `${progress}%` }}
@@ -179,8 +179,8 @@ export default function Interview() {
             </div>
             <div className="flex items-center gap-6">
               <div className="text-right">
-                <p className="text-xs text-gray-600">Time Elapsed</p>
-                <p className="text-lg font-mono font-semibold text-gray-900">{formatTime(timeElapsed)}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Time Elapsed</p>
+                <p className="text-lg font-mono font-semibold text-gray-900 dark:text-white">{formatTime(timeElapsed)}</p>
               </div>
             </div>
           </div>
@@ -188,7 +188,7 @@ export default function Interview() {
       </nav>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-700">
           {/* Question Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
@@ -208,7 +208,7 @@ export default function Interview() {
 
           {/* Question */}
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4 leading-relaxed">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 leading-relaxed">
               {currentQuestion.question}
             </h2>
             <p className="text-sm text-gray-500">
@@ -219,10 +219,10 @@ export default function Interview() {
           {/* Answer Input */}
           <div className="mb-6">
             <div className="flex justify-between items-center mb-2">
-              <label htmlFor="answer" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="answer" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Your Answer
               </label>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
                 {wordCount} {wordCount === 1 ? 'word' : 'words'}
               </span>
             </div>
@@ -231,7 +231,7 @@ export default function Interview() {
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
               rows={10}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition resize-none text-gray-900"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition resize-none text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
               placeholder="Start typing your answer here..."
             />
           </div>
@@ -246,7 +246,7 @@ export default function Interview() {
                     ? "w-8 bg-indigo-600"
                     : answers[index]
                     ? "w-2 bg-green-400"
-                    : "w-2 bg-gray-300"
+                    : "w-2 bg-gray-300 dark:bg-gray-600"
                 }`}
               />
             ))}
@@ -257,7 +257,7 @@ export default function Interview() {
             <button
               onClick={handlePrevious}
               disabled={currentQuestionIndex === 0}
-              className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               <span>←</span>
               Previous
@@ -287,8 +287,8 @@ export default function Interview() {
         </div>
 
         {/* Help Card */}
-        <div className="mt-6 bg-blue-50 rounded-xl p-4 border border-blue-100">
-          <p className="text-sm text-blue-900">
+        <div className="mt-6 bg-blue-50 dark:bg-blue-900/30 rounded-xl p-4 border border-blue-100 dark:border-blue-800">
+          <p className="text-sm text-blue-900 dark:text-blue-300">
             <span className="font-semibold">Tip:</span> Your answer will be evaluated by AI for accuracy, completeness, and clarity. Include key concepts and provide examples where applicable.
           </p>
         </div>

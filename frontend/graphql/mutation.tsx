@@ -61,6 +61,12 @@ export const FINISH_INTERVIEW = gql`
       totalScore
       totalQuestion
       percentage
+      newAchievements {
+        id
+        name
+        description
+        icon
+      }
     }
   }
 `;

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useMutation } from "@apollo/client/react"
 import { FINISH_INTERVIEW } from "../../graphql/mutation"
+import AchievementToast from "@/components/AchievementToast"
 
 interface Question {
   id: string
@@ -23,6 +24,12 @@ interface FinishInterviewData {
     totalScore: number
     totalQuestion: number
     percentage: number
+    newAchievements: {
+      id: string
+      name: string
+      description: string
+      icon: string
+    }[]
   }
 }
 
@@ -37,7 +44,8 @@ export default function Results() {
   const [feedbacks, setFeedbacks] = useState<any[]>([])
   const [summary, setSummary] = useState<any>(null)
   const [expandedQuestion, setExpandedQuestion] = useState<number | null>(0)
-
+  const [showToast, setShowToast] = useState(false)
+  const [newAchievements, setNewAchievements] = useState<{id:string, name:string, description:string, icon:string}[]>([])
   const [finishInterview, { loading }] = useMutation<FinishInterviewData>(FINISH_INTERVIEW)
 
   useEffect(() => {
@@ -68,6 +76,10 @@ export default function Results() {
         })
         if (result.data) {
           setSummary(result.data.finishInterview)
+          if (result.data.finishInterview.newAchievements?.length > 0) {
+            setNewAchievements(result.data.finishInterview.newAchievements)
+            setShowToast(true)
+          }
         }
       } catch (err) {
         console.error("Error finishing interview:", err)
@@ -79,10 +91,10 @@ export default function Results() {
 
   if (!interview || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-indigo-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Analyzing your performance...</p>
+          <p className="text-gray-600 dark:text-gray-400">Analyzing your performance...</p>
         </div>
       </div>
     )
@@ -131,8 +143,8 @@ export default function Results() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <nav className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-200">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
+      <nav className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
@@ -147,22 +159,22 @@ export default function Results() {
 
       <div className="max-w-6xl mx-auto px-4 py-12">
         {/* Score Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-6 border border-gray-100">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-6 border border-gray-100 dark:border-gray-700">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-6">
               <div className={`w-24 h-24 ${gradeInfo.bg} rounded-2xl flex items-center justify-center ring-4 ${gradeInfo.ring}`}>
                 <span className={`text-4xl font-bold ${gradeInfo.color}`}>{gradeInfo.grade}</span>
               </div>
               <div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-1">Interview Complete!</h2>
-                <p className="text-lg text-gray-600">You scored {percentage.toFixed(1)}%</p>
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">Interview Complete!</h2>
+                <p className="text-lg text-gray-600 dark:text-gray-400">You scored {percentage.toFixed(1)}%</p>
               </div>
             </div>
             <div className="text-right">
               <div className="text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                 {totalScore}
               </div>
-              <div className="text-sm text-gray-500">out of {maxPossibleScore}</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">out of {maxPossibleScore}</div>
             </div>
           </div>
 
@@ -186,14 +198,14 @@ export default function Results() {
 
         {/* Weak Areas */}
         {weakQuestions.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-xl p-8 mb-6 border border-gray-100">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-6 border border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
                 <span className="text-xl">⚠️</span>
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-gray-900">Areas for Improvement</h3>
-                <p className="text-gray-600">Focus on these topics to strengthen your knowledge</p>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Areas for Improvement</h3>
+                <p className="text-gray-600 dark:text-gray-400">Focus on these topics to strengthen your knowledge</p>
               </div>
             </div>
             <div className="space-y-3">
@@ -201,9 +213,9 @@ export default function Results() {
                 <div key={index} className="bg-red-50 border-l-4 border-red-500 rounded-r-lg p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900 mb-2">{qa.question.question}</h4>
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{qa.question.question}</h4>
                       <div className="flex flex-wrap gap-2">
-                        {qa.missedConcepts.map((concept, i) => (
+                        {qa.missedConcepts.map((concept: string, i: number) => (
                           <span key={i} className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">
                             {concept}
                           </span>
@@ -221,20 +233,20 @@ export default function Results() {
         )}
 
         {/* Detailed Analysis */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-6 border border-gray-100">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-6 border border-gray-100 dark:border-gray-700">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/50 rounded-lg flex items-center justify-center">
               <span className="text-xl">📊</span>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900">Detailed Analysis</h3>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Detailed Analysis</h3>
           </div>
           
           <div className="space-y-4">
             {questionAnalysis.map((qa, index) => (
-              <div key={index} className="border border-gray-200 rounded-xl overflow-hidden">
+              <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
                 <button
                   onClick={() => setExpandedQuestion(expandedQuestion === index ? null : index)}
-                  className="w-full p-6 bg-gray-50 hover:bg-gray-100 transition flex items-center justify-between"
+                  className="w-full p-6 bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition flex items-center justify-between"
                 >
                   <div className="flex items-center gap-4 flex-1 text-left">
                     <div className={`w-16 h-16 rounded-xl flex items-center justify-center font-bold text-xl ${
@@ -259,11 +271,11 @@ export default function Results() {
                           {qa.question.difficulty}
                         </span>
                       </div>
-                      <h4 className="font-semibold text-gray-900">{qa.question.question}</h4>
+                      <h4 className="font-semibold text-gray-900 dark:text-white">{qa.question.question}</h4>
                     </div>
                     <div className="text-right">
-                      <div className="text-sm text-gray-500">Score</div>
-                      <div className="text-2xl font-bold text-gray-900">{qa.percentage}%</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">Score</div>
+                      <div className="text-2xl font-bold text-gray-900 dark:text-white">{qa.percentage}%</div>
                     </div>
                   </div>
                   <svg 
@@ -277,16 +289,16 @@ export default function Results() {
                 </button>
 
                 {expandedQuestion === index && (
-                  <div className="p-6 bg-white border-t border-gray-200">
+                  <div className="p-6 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
                     <div className="space-y-6">
                       {/* Your Answer */}
                       <div>
                         <div className="flex items-center gap-2 mb-3">
                           <span className="text-lg">✍️</span>
-                          <h5 className="font-semibold text-gray-900">Your Answer</h5>
+                          <h5 className="font-semibold text-gray-900 dark:text-white">Your Answer</h5>
                         </div>
-                        <div className={`p-4 rounded-lg ${qa.isAnswered ? 'bg-gray-50 border border-gray-200' : 'bg-red-50 border border-red-200'}`}>
-                          <p className={`text-sm ${qa.isAnswered ? 'text-gray-700' : 'text-red-700'}`}>
+                        <div className={`p-4 rounded-lg ${qa.isAnswered ? 'bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600' : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'}`}>
+                          <p className={`text-sm ${qa.isAnswered ? 'text-gray-700 dark:text-gray-300' : 'text-red-700 dark:text-red-400'}`}>
                             {qa.answer || "No answer provided"}
                           </p>
                         </div>
@@ -297,10 +309,10 @@ export default function Results() {
                         <div>
                           <div className="flex items-center gap-2 mb-3">
                             <span className="text-lg">🤖</span>
-                            <h5 className="font-semibold text-gray-900">AI Feedback</h5>
+                            <h5 className="font-semibold text-gray-900 dark:text-white">AI Feedback</h5>
                           </div>
-                          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                            <p className="text-sm text-blue-900 leading-relaxed">{qa.feedback}</p>
+                          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                            <p className="text-sm text-blue-900 dark:text-blue-300 leading-relaxed">{qa.feedback}</p>
                           </div>
                         </div>
                       )}
@@ -314,7 +326,7 @@ export default function Results() {
                           </div>
                           <div className="flex flex-wrap gap-2">
                             {qa.coveredConcepts.length > 0 ? (
-                              qa.coveredConcepts.map((concept, i) => (
+                              qa.coveredConcepts.map((concept: string, i: number) => (
                                 <span key={i} className="px-3 py-1.5 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
                                   {concept}
                                 </span>
@@ -331,7 +343,7 @@ export default function Results() {
                           </div>
                           <div className="flex flex-wrap gap-2">
                             {qa.missedConcepts.length > 0 ? (
-                              qa.missedConcepts.map((concept, i) => (
+                              qa.missedConcepts.map((concept: string, i: number) => (
                                 <span key={i} className="px-3 py-1.5 bg-red-100 text-red-700 rounded-lg text-sm font-medium">
                                   {concept}
                                 </span>
@@ -351,7 +363,7 @@ export default function Results() {
         </div>
 
         {/* Actions */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700">
           <div className="flex gap-4">
             <button
               onClick={handleNewInterview}
@@ -361,12 +373,20 @@ export default function Results() {
             </button>
             <button
               onClick={() => router.push("/dashboard")}
-              className="flex-1 bg-gray-100 text-gray-700 py-4 rounded-xl font-semibold text-lg hover:bg-gray-200 transition"
+              className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-4 rounded-xl font-semibold text-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition"
             >
               Back to Dashboard
             </button>
           </div>
         </div>
+      </div>
+      <div>
+        {showToast && (
+           <AchievementToast
+             achievements={newAchievements}
+             onClose={() => setShowToast(false)} 
+           />
+        )}
       </div>
     </div>
   )
