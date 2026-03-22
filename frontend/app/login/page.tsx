@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useMutation } from "@apollo/client/react"
 import { LOGIN } from "../../graphql/mutation"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 interface LoginData {
   login: {
@@ -116,9 +117,9 @@ export default function Login() {
 
                     <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
                         Don't have an account?{" "}
-                        <a href="/signup" className="text-indigo-600 hover:text-indigo-700 font-medium">
+                        <Link href="/signup" className="text-indigo-600 hover:text-indigo-700 font-medium">
                             Sign up
-                        </a>
+                        </Link>
                     </p>
                 </div>
             </div>
