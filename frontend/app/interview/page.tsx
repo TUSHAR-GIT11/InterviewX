@@ -94,8 +94,8 @@ export default function Interview() {
     newAnswers[currentQuestionIndex] = answer
     setAnswers(newAnswers)
 
-    let newScores = [...scores]
-    let newFeedbacks = [...feedbacks]
+    const newScores = [...scores]
+    const newFeedbacks = [...feedbacks]
 
     if (answer && answer.trim().length > 0) {
       try {
