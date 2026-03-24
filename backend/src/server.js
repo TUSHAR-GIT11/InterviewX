@@ -10,6 +10,7 @@ dotenv.config();
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  csrfPrevention: false,
 });
 
 const { url } = await startStandaloneServer(server, {
