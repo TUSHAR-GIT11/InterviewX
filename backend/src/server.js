@@ -15,18 +15,21 @@ const server = new ApolloServer({
 
 const { url } = await startStandaloneServer(server, {
   listen: { port: 4000 },
-  context:async({req})=>{
-     const authHeader = req.headers.authorization || ""
-     if(!authHeader) return {}
-     try{
-           const token = authHeader.replace("Bearer ","")
-           const decoded = jwt.verify(token, process.env.JWT_SECRET)
-           return {user: decoded}
-
-     }catch(err){
-          return {}
-     }     
-  }
+  context: async ({ req }) => {
+    const authHeader = req.headers.authorization || ""
+    if (!authHeader) return {}
+    try {
+      const token = authHeader.replace("Bearer ", "")
+      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+      return { user: decoded }
+    } catch (err) {
+      return {}
+    }
+  },
+  cors: {
+    origin: "*",
+    credentials: true,
+  },
 });
 
 console.log(`🚀 Server ready at ${url}`);
