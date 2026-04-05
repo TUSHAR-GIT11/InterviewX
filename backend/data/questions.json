@@ -1,246 +1,722 @@
 [
-{
-"domain":"FRONTEND",
-"difficulty":"EASY",
-"question":"What is HTML?",
-"keywords":["markup","web structure"],
-"tags":["html"],
-"weight":1
-},
-{
-"domain":"FRONTEND",
-"difficulty":"EASY",
-"question":"What is the difference between HTML and HTML5?",
-"keywords":["semantic","features"],
-"tags":["html"],
-"weight":1
-},
-{
-"domain":"FRONTEND",
-"difficulty":"EASY",
-"question":"What is CSS?",
-"keywords":["styling","design"],
-"tags":["css"],
-"weight":1
-},
-{
-"domain":"FRONTEND",
-"difficulty":"EASY",
-"question":"What is the difference between class and id in CSS?",
-"keywords":["selector","specificity"],
-"tags":["css"],
-"weight":1
-},
-{
-"domain":"FRONTEND",
-"difficulty":"EASY",
-"question":"What is JavaScript used for?",
-"keywords":["scripting","interaction"],
-"tags":["javascript"],
-"weight":1
-},
-{
-"domain":"FRONTEND",
-"difficulty":"EASY",
-"question":"What is the difference between var, let, and const?",
-"keywords":["scope","hoisting"],
-"tags":["javascript"],
-"weight":1
-},
-{
-"domain":"FRONTEND",
-"difficulty":"EASY",
-"question":"What is a responsive website?",
-"keywords":["mobile","media queries"],
-"tags":["css"],
-"weight":1
-},
-{
-"domain":"FRONTEND",
-"difficulty":"EASY",
-"question":"What is JSX in React?",
-"keywords":["syntax","react"],
-"tags":["react"],
-"weight":1
-},
-{
-"domain":"FRONTEND",
-"difficulty":"EASY",
-"question":"What are React components?",
-"keywords":["functional","class"],
-"tags":["react"],
-"weight":1
-},
-{
-"domain":"FRONTEND",
-"difficulty":"EASY",
-"question":"What is CSS Flexbox?",
-"keywords":["layout","alignment"],
-"tags":["css"],
-"weight":1
-},
-
-
-{
-"domain":"FRONTEND",
-"difficulty":"MEDIUM",
-"question":"Explain how useEffect works in React.",
-"keywords":["side effects","dependency array"],
-"tags":["react"],
-"weight":2
-},
-{
-"domain":"FRONTEND",
-"difficulty":"MEDIUM",
-"question":"What is event delegation?",
-"keywords":["bubbling","performance"],
-"tags":["javascript"],
-"weight":2
-},
-{
-"domain":"FRONTEND",
-"difficulty":"MEDIUM",
-"question":"Explain closures in JavaScript.",
-"keywords":["scope","functions"],
-"tags":["javascript"],
-"weight":2
-},
-{
-"domain":"FRONTEND",
-"difficulty":"MEDIUM",
-"question":"What is the difference between localStorage and sessionStorage?",
-"keywords":["browser storage"],
-"tags":["browser"],
-"weight":2
-},
-{
-"domain":"FRONTEND",
-"difficulty":"MEDIUM",
-"question":"What are React hooks?",
-"keywords":["useState","useEffect"],
-"tags":["react"],
-"weight":2
-},
-{
-"domain":"FRONTEND",
-"difficulty":"MEDIUM",
-"question":"What is memoization in React?",
-"keywords":["performance","useMemo"],
-"tags":["react"],
-"weight":2
-},
-{
-"domain":"FRONTEND",
-"difficulty":"MEDIUM",
-"question":"What is lazy loading?",
-"keywords":["performance","code splitting"],
-"tags":["react"],
-"weight":2
-},
-{
-"domain":"FRONTEND",
-"difficulty":"MEDIUM",
-"question":"What is the difference between == and ===?",
-"keywords":["comparison"],
-"tags":["javascript"],
-"weight":2
-},
-{
-"domain":"FRONTEND",
-"difficulty":"MEDIUM",
-"question":"What is debounce and throttle?",
-"keywords":["optimization"],
-"tags":["javascript"],
-"weight":2
-},
-{
-"domain":"FRONTEND",
-"difficulty":"MEDIUM",
-"question":"Controlled vs uncontrolled components?",
-"keywords":["forms"],
-"tags":["react"],
-"weight":2
-},
-
-
-{
-"domain":"FRONTEND",
-"difficulty":"HARD",
-"question":"Explain React reconciliation.",
-"keywords":["diffing","virtual DOM"],
-"tags":["react"],
-"weight":3
-},
-{
-"domain":"FRONTEND",
-"difficulty":"HARD",
-"question":"Explain the JavaScript event loop.",
-"keywords":["call stack","task queue"],
-"tags":["javascript"],
-"weight":3
-},
-{
-"domain":"FRONTEND",
-"difficulty":"HARD",
-"question":"How does browser rendering work?",
-"keywords":["DOM","CSSOM"],
-"tags":["browser"],
-"weight":3
-},
-{
-"domain":"FRONTEND",
-"difficulty":"HARD",
-"question":"Explain server side rendering vs client side rendering.",
-"keywords":["SSR","CSR"],
-"tags":["architecture"],
-"weight":3
-},
-{
-"domain":"FRONTEND",
-"difficulty":"HARD",
-"question":"What is React Fiber?",
-"keywords":["architecture"],
-"tags":["react"],
-"weight":3
-},
-{
-"domain":"FRONTEND",
-"difficulty":"HARD",
-"question":"How do you optimize React performance?",
-"keywords":["memoization","lazy loading"],
-"tags":["react"],
-"weight":3
-},
-{
-"domain":"FRONTEND",
-"difficulty":"HARD",
-"question":"Explain code splitting.",
-"keywords":["bundle","performance"],
-"tags":["optimization"],
-"weight":3
-},
-{
-"domain":"FRONTEND",
-"difficulty":"HARD",
-"question":"What are higher order components?",
-"keywords":["HOC"],
-"tags":["react"],
-"weight":3
-},
-{
-"domain":"FRONTEND",
-"difficulty":"HARD",
-"question":"Explain hydration in React.",
-"keywords":["SSR"],
-"tags":["react"],
-"weight":3
-},
-{
-"domain":"FRONTEND",
-"difficulty":"HARD",
-"question":"Difference between useMemo and useCallback.",
-"keywords":["optimization"],
-"tags":["react"],
-"weight":3
-}
+  {
+    "domain": "FRONTEND",
+    "difficulty": "EASY",
+    "question": "What is HTML?",
+    "keywords": ["markup", "web structure"],
+    "tags": ["html"],
+    "weight": 1
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "EASY",
+    "question": "What is CSS?",
+    "keywords": ["styling", "design"],
+    "tags": ["css"],
+    "weight": 1
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "EASY",
+    "question": "What is JavaScript?",
+    "keywords": ["scripting", "interaction"],
+    "tags": ["javascript"],
+    "weight": 1
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "EASY",
+    "question": "What is the DOM?",
+    "keywords": ["document", "object", "model"],
+    "tags": ["javascript"],
+    "weight": 1
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "EASY",
+    "question": "What is React?",
+    "keywords": ["library", "components"],
+    "tags": ["react"],
+    "weight": 1
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "EASY",
+    "question": "What is JSX?",
+    "keywords": ["syntax", "react"],
+    "tags": ["react"],
+    "weight": 1
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "EASY",
+    "question": "What is CSS Flexbox?",
+    "keywords": ["layout", "alignment"],
+    "tags": ["css"],
+    "weight": 1
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "EASY",
+    "question": "What is responsive design?",
+    "keywords": ["mobile", "media queries"],
+    "tags": ["css"],
+    "weight": 1
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "EASY",
+    "question": "What are HTML semantic elements?",
+    "keywords": ["semantic", "structure"],
+    "tags": ["html"],
+    "weight": 1
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "EASY",
+    "question": "What is the difference between var, let, and const?",
+    "keywords": ["scope", "hoisting"],
+    "tags": ["javascript"],
+    "weight": 1
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "MEDIUM",
+    "question": "Explain how useEffect works in React.",
+    "keywords": ["side effects", "dependency array"],
+    "tags": ["react"],
+    "weight": 2
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "MEDIUM",
+    "question": "What is event delegation?",
+    "keywords": ["bubbling", "performance"],
+    "tags": ["javascript"],
+    "weight": 2
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "MEDIUM",
+    "question": "Explain closures in JavaScript.",
+    "keywords": ["scope", "functions"],
+    "tags": ["javascript"],
+    "weight": 2
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "MEDIUM",
+    "question": "What are React hooks?",
+    "keywords": ["useState", "useEffect"],
+    "tags": ["react"],
+    "weight": 2
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "MEDIUM",
+    "question": "What is async/await?",
+    "keywords": ["promises", "asynchronous"],
+    "tags": ["javascript"],
+    "weight": 2
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "MEDIUM",
+    "question": "What is CSS Grid?",
+    "keywords": ["layout", "grid system"],
+    "tags": ["css"],
+    "weight": 2
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "MEDIUM",
+    "question": "What is state management in React?",
+    "keywords": ["state", "props", "context"],
+    "tags": ["react"],
+    "weight": 2
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "MEDIUM",
+    "question": "What is the difference between == and ===?",
+    "keywords": ["comparison", "type coercion"],
+    "tags": ["javascript"],
+    "weight": 2
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "MEDIUM",
+    "question": "What is debounce and throttle?",
+    "keywords": ["optimization", "performance"],
+    "tags": ["javascript"],
+    "weight": 2
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "MEDIUM",
+    "question": "What is the difference between localStorage and sessionStorage?",
+    "keywords": ["browser storage", "persistence"],
+    "tags": ["browser"],
+    "weight": 2
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "HARD",
+    "question": "Explain React reconciliation.",
+    "keywords": ["diffing", "virtual DOM"],
+    "tags": ["react"],
+    "weight": 3
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "HARD",
+    "question": "Explain the JavaScript event loop.",
+    "keywords": ["call stack", "task queue"],
+    "tags": ["javascript"],
+    "weight": 3
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "HARD",
+    "question": "How does browser rendering work?",
+    "keywords": ["DOM", "CSSOM", "render tree"],
+    "tags": ["browser"],
+    "weight": 3
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "HARD",
+    "question": "What is React Fiber?",
+    "keywords": ["architecture", "reconciliation"],
+    "tags": ["react"],
+    "weight": 3
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "HARD",
+    "question": "Explain code splitting and lazy loading.",
+    "keywords": ["bundle", "performance", "optimization"],
+    "tags": ["optimization"],
+    "weight": 3
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "HARD",
+    "question": "What are higher order components?",
+    "keywords": ["HOC", "component composition"],
+    "tags": ["react"],
+    "weight": 3
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "HARD",
+    "question": "Explain server-side rendering vs client-side rendering.",
+    "keywords": ["SSR", "CSR", "hydration"],
+    "tags": ["architecture"],
+    "weight": 3
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "HARD",
+    "question": "What is micro-frontend architecture?",
+    "keywords": ["modular", "scalability", "architecture"],
+    "tags": ["architecture"],
+    "weight": 3
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "HARD",
+    "question": "Explain Web Workers and Service Workers.",
+    "keywords": ["background", "threading", "caching"],
+    "tags": ["browser"],
+    "weight": 3
+  },
+  {
+    "domain": "FRONTEND",
+    "difficulty": "HARD",
+    "question": "What is the difference between useMemo and useCallback?",
+    "keywords": ["optimization", "memoization"],
+    "tags": ["react"],
+    "weight": 3
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "EASY",
+    "question": "What is HTTP?",
+    "keywords": ["protocol", "request", "response"],
+    "tags": ["http"],
+    "weight": 1
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "EASY",
+    "question": "What is a REST API?",
+    "keywords": ["resources", "HTTP methods"],
+    "tags": ["api"],
+    "weight": 1
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "EASY",
+    "question": "What is the difference between GET and POST?",
+    "keywords": ["idempotent", "body"],
+    "tags": ["http"],
+    "weight": 1
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "EASY",
+    "question": "What is JSON?",
+    "keywords": ["serialization", "data format"],
+    "tags": ["api"],
+    "weight": 1
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "EASY",
+    "question": "What is a database?",
+    "keywords": ["storage", "data", "persistence"],
+    "tags": ["database"],
+    "weight": 1
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "EASY",
+    "question": "What is SQL?",
+    "keywords": ["query", "database", "structured"],
+    "tags": ["database"],
+    "weight": 1
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "EASY",
+    "question": "What is middleware?",
+    "keywords": ["pipeline", "request", "processing"],
+    "tags": ["express"],
+    "weight": 1
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "EASY",
+    "question": "What are HTTP status codes?",
+    "keywords": ["200", "404", "500"],
+    "tags": ["http"],
+    "weight": 1
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "EASY",
+    "question": "What is an API endpoint?",
+    "keywords": ["URL", "route", "resource"],
+    "tags": ["api"],
+    "weight": 1
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "EASY",
+    "question": "What are environment variables?",
+    "keywords": ["configuration", "security"],
+    "tags": ["deployment"],
+    "weight": 1
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "MEDIUM",
+    "question": "How does JWT authentication work?",
+    "keywords": ["token", "signature", "claims"],
+    "tags": ["auth"],
+    "weight": 2
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "MEDIUM",
+    "question": "What are the ACID properties?",
+    "keywords": ["atomicity", "consistency", "isolation", "durability"],
+    "tags": ["database"],
+    "weight": 2
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "MEDIUM",
+    "question": "What is database indexing?",
+    "keywords": ["B-tree", "performance", "query optimization"],
+    "tags": ["database"],
+    "weight": 2
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "MEDIUM",
+    "question": "What is the N+1 query problem?",
+    "keywords": ["ORM", "eager loading", "performance"],
+    "tags": ["database"],
+    "weight": 2
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "MEDIUM",
+    "question": "What is CORS?",
+    "keywords": ["browser", "preflight", "security"],
+    "tags": ["security"],
+    "weight": 2
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "MEDIUM",
+    "question": "What is rate limiting?",
+    "keywords": ["throttling", "abuse", "protection"],
+    "tags": ["api"],
+    "weight": 2
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "MEDIUM",
+    "question": "What is connection pooling?",
+    "keywords": ["database", "performance", "connections"],
+    "tags": ["database"],
+    "weight": 2
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "MEDIUM",
+    "question": "What is caching?",
+    "keywords": ["performance", "memory", "redis"],
+    "tags": ["performance"],
+    "weight": 2
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "MEDIUM",
+    "question": "What is load balancing?",
+    "keywords": ["distribution", "scaling", "availability"],
+    "tags": ["architecture"],
+    "weight": 2
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "MEDIUM",
+    "question": "What is the difference between SQL and NoSQL?",
+    "keywords": ["schema", "documents", "relational"],
+    "tags": ["database"],
+    "weight": 2
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "HARD",
+    "question": "Explain the CAP theorem.",
+    "keywords": ["consistency", "availability", "partition tolerance"],
+    "tags": ["distributed systems"],
+    "weight": 3
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "HARD",
+    "question": "What is distributed locking?",
+    "keywords": ["deadlock", "Redis", "consensus"],
+    "tags": ["distributed systems"],
+    "weight": 3
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "HARD",
+    "question": "What is database sharding?",
+    "keywords": ["partition key", "hot spots", "scaling"],
+    "tags": ["database"],
+    "weight": 3
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "HARD",
+    "question": "Explain microservices architecture.",
+    "keywords": ["distributed", "services", "communication"],
+    "tags": ["architecture"],
+    "weight": 3
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "HARD",
+    "question": "What is the circuit breaker pattern?",
+    "keywords": ["resilience", "timeouts", "failure"],
+    "tags": ["patterns"],
+    "weight": 3
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "HARD",
+    "question": "Explain OAuth 2.0 flow.",
+    "keywords": ["tokens", "redirect", "authorization"],
+    "tags": ["auth"],
+    "weight": 3
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "HARD",
+    "question": "What is event sourcing?",
+    "keywords": ["events", "state", "audit trail"],
+    "tags": ["patterns"],
+    "weight": 3
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "HARD",
+    "question": "Explain horizontal vs vertical scaling.",
+    "keywords": ["load balancer", "state", "resources"],
+    "tags": ["architecture"],
+    "weight": 3
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "HARD",
+    "question": "What is CQRS pattern?",
+    "keywords": ["command", "query", "separation"],
+    "tags": ["patterns"],
+    "weight": 3
+  },
+  {
+    "domain": "BACKEND",
+    "difficulty": "HARD",
+    "question": "What is eventual consistency?",
+    "keywords": ["replication", "latency", "distributed"],
+    "tags": ["distributed systems"],
+    "weight": 3
+  },
+  {
+    "domain": "HR",
+    "difficulty": "EASY",
+    "question": "Tell me about yourself.",
+    "keywords": ["introduction", "background", "experience"],
+    "tags": ["behavioral"],
+    "weight": 1
+  },
+  {
+    "domain": "HR",
+    "difficulty": "EASY",
+    "question": "Why do you want to work here?",
+    "keywords": ["motivation", "company research", "alignment"],
+    "tags": ["behavioral"],
+    "weight": 1
+  },
+  {
+    "domain": "HR",
+    "difficulty": "EASY",
+    "question": "What are your strengths?",
+    "keywords": ["self-awareness", "skills", "examples"],
+    "tags": ["behavioral"],
+    "weight": 1
+  },
+  {
+    "domain": "HR",
+    "difficulty": "EASY",
+    "question": "What are your weaknesses?",
+    "keywords": ["self-improvement", "honesty", "growth"],
+    "tags": ["behavioral"],
+    "weight": 1
+  },
+  {
+    "domain": "HR",
+    "difficulty": "EASY",
+    "question": "Where do you see yourself in 5 years?",
+    "keywords": ["career goals", "ambition", "planning"],
+    "tags": ["behavioral"],
+    "weight": 1
+  },
+  {
+    "domain": "HR",
+    "difficulty": "EASY",
+    "question": "Why are you leaving your current job?",
+    "keywords": ["professional reasons", "growth", "opportunity"],
+    "tags": ["behavioral"],
+    "weight": 1
+  },
+  {
+    "domain": "HR",
+    "difficulty": "EASY",
+    "question": "What motivates you at work?",
+    "keywords": ["drive", "passion", "engagement"],
+    "tags": ["behavioral"],
+    "weight": 1
+  },
+  {
+    "domain": "HR",
+    "difficulty": "EASY",
+    "question": "How do you handle stress?",
+    "keywords": ["coping mechanisms", "pressure", "management"],
+    "tags": ["behavioral"],
+    "weight": 1
+  },
+  {
+    "domain": "HR",
+    "difficulty": "EASY",
+    "question": "What is your greatest achievement?",
+    "keywords": ["accomplishment", "impact", "pride"],
+    "tags": ["behavioral"],
+    "weight": 1
+  },
+  {
+    "domain": "HR",
+    "difficulty": "EASY",
+    "question": "Do you have any questions for us?",
+    "keywords": ["curiosity", "engagement", "research"],
+    "tags": ["behavioral"],
+    "weight": 1
+  },
+  {
+    "domain": "HR",
+    "difficulty": "MEDIUM",
+    "question": "Describe a time when you had to work with a difficult team member.",
+    "keywords": ["conflict resolution", "teamwork", "communication"],
+    "tags": ["situational"],
+    "weight": 2
+  },
+  {
+    "domain": "HR",
+    "difficulty": "MEDIUM",
+    "question": "Tell me about a time you failed and how you handled it.",
+    "keywords": ["resilience", "learning", "accountability"],
+    "tags": ["situational"],
+    "weight": 2
+  },
+  {
+    "domain": "HR",
+    "difficulty": "MEDIUM",
+    "question": "Describe a situation where you had to meet a tight deadline.",
+    "keywords": ["time management", "pressure", "prioritization"],
+    "tags": ["situational"],
+    "weight": 2
+  },
+  {
+    "domain": "HR",
+    "difficulty": "MEDIUM",
+    "question": "Give an example of when you had to learn something new quickly.",
+    "keywords": ["adaptability", "learning agility", "growth"],
+    "tags": ["situational"],
+    "weight": 2
+  },
+  {
+    "domain": "HR",
+    "difficulty": "MEDIUM",
+    "question": "Tell me about a time you disagreed with your manager.",
+    "keywords": ["professional disagreement", "communication", "respect"],
+    "tags": ["situational"],
+    "weight": 2
+  },
+  {
+    "domain": "HR",
+    "difficulty": "MEDIUM",
+    "question": "Describe a time when you had to persuade someone.",
+    "keywords": ["influence", "communication", "negotiation"],
+    "tags": ["situational"],
+    "weight": 2
+  },
+  {
+    "domain": "HR",
+    "difficulty": "MEDIUM",
+    "question": "Tell me about a time you made a mistake at work.",
+    "keywords": ["accountability", "learning", "improvement"],
+    "tags": ["situational"],
+    "weight": 2
+  },
+  {
+    "domain": "HR",
+    "difficulty": "MEDIUM",
+    "question": "Describe working with limited resources.",
+    "keywords": ["resourcefulness", "creativity", "problem-solving"],
+    "tags": ["situational"],
+    "weight": 2
+  },
+  {
+    "domain": "HR",
+    "difficulty": "MEDIUM",
+    "question": "Give an example of going above and beyond.",
+    "keywords": ["initiative", "dedication", "value-add"],
+    "tags": ["situational"],
+    "weight": 2
+  },
+  {
+    "domain": "HR",
+    "difficulty": "MEDIUM",
+    "question": "Tell me about giving constructive feedback.",
+    "keywords": ["communication", "leadership", "development"],
+    "tags": ["situational"],
+    "weight": 2
+  },
+  {
+    "domain": "HR",
+    "difficulty": "HARD",
+    "question": "Describe leading a team through major change or crisis.",
+    "keywords": ["leadership", "change management", "crisis response"],
+    "tags": ["leadership"],
+    "weight": 3
+  },
+  {
+    "domain": "HR",
+    "difficulty": "HARD",
+    "question": "Tell me about making a difficult decision with incomplete information.",
+    "keywords": ["decision making", "uncertainty", "risk assessment"],
+    "tags": ["leadership"],
+    "weight": 3
+  },
+  {
+    "domain": "HR",
+    "difficulty": "HARD",
+    "question": "Describe balancing competing priorities from different stakeholders.",
+    "keywords": ["stakeholder management", "prioritization", "negotiation"],
+    "tags": ["leadership"],
+    "weight": 3
+  },
+  {
+    "domain": "HR",
+    "difficulty": "HARD",
+    "question": "Give an example of challenging the status quo.",
+    "keywords": ["innovation", "change leadership", "courage"],
+    "tags": ["leadership"],
+    "weight": 3
+  },
+  {
+    "domain": "HR",
+    "difficulty": "HARD",
+    "question": "Tell me about delivering bad news to a team or client.",
+    "keywords": ["communication", "empathy", "transparency"],
+    "tags": ["leadership"],
+    "weight": 3
+  },
+  {
+    "domain": "HR",
+    "difficulty": "HARD",
+    "question": "Describe building consensus among people with different opinions.",
+    "keywords": ["consensus building", "facilitation", "collaboration"],
+    "tags": ["leadership"],
+    "weight": 3
+  },
+  {
+    "domain": "HR",
+    "difficulty": "HARD",
+    "question": "Tell me about taking responsibility for a team's failure.",
+    "keywords": ["accountability", "leadership", "team responsibility"],
+    "tags": ["leadership"],
+    "weight": 3
+  },
+  {
+    "domain": "HR",
+    "difficulty": "HARD",
+    "question": "Describe mentoring someone who was struggling.",
+    "keywords": ["mentoring", "development", "patience"],
+    "tags": ["leadership"],
+    "weight": 3
+  },
+  {
+    "domain": "HR",
+    "difficulty": "HARD",
+    "question": "Give an example of navigating office politics.",
+    "keywords": ["political awareness", "diplomacy", "strategy"],
+    "tags": ["leadership"],
+    "weight": 3
+  },
+  {
+    "domain": "HR",
+    "difficulty": "HARD",
+    "question": "Tell me about making an unpopular decision for the greater good.",
+    "keywords": ["tough decisions", "leadership courage", "organizational thinking"],
+    "tags": ["leadership"],
+    "weight": 3
+  }
 ]

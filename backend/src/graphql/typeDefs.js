@@ -94,6 +94,16 @@ const typeDefs = gql`
               achievement: Achievement
             }
 
+            type AnalyticsData {
+              totalInterviews: Int!
+              avgScore: Int!
+              bestScore: Int!
+              streak: Int!
+              monthlyPerformance: [Int!]!
+              skillLevels: [Int!]!
+              domainStats: [Int!]!
+            }
+
   type Query {
     hello: String
     getUserStats: UserStats!
@@ -104,6 +114,7 @@ const typeDefs = gql`
     getAllQuestions: [Question!]!
     getUserAchievements: [UserAchievement]
     getAllAchievements: [Achievement]
+    getAnalyticsData: AnalyticsData!
   }
 
   type UserStats {

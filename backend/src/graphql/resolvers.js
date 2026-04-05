@@ -154,34 +154,34 @@ const resolvers = {
         avgScore
       }
     },
-    getAllQuestions: async(_,__,{user})=>{
+    getAllQuestions: async (_, __, { user }) => {
       requireAdmin(user)
       const questions = await prisma.question.findMany({
-        select:{ 
-          id:true,
-          domain:true,
-          difficulty:true,
-          question:true,
-          keywords:true,
-          tags:true,
-          weight:true,
-          createdAt:true
-         },
-         orderBy:{ createdAt:"desc" }
+        select: {
+          id: true,
+          domain: true,
+          difficulty: true,
+          question: true,
+          keywords: true,
+          tags: true,
+          weight: true,
+          createdAt: true
+        },
+        orderBy: { createdAt: "desc" }
       })
       return questions
     },
-    getUserAchievements: async(_,__,context)=>{
-      if(!context.user){
+    getUserAchievements: async (_, __, context) => {
+      if (!context.user) {
         throw new Error("Not authenticated")
       }
 
       const userAchievements = await prisma.userAchievement.findMany({
-        where:{ userId:context.user.userId },
-        include:{ achievement:true },
-        orderBy:{ unlockedAt:"desc" }
+        where: { userId: context.user.userId },
+        include: { achievement: true },
+        orderBy: { unlockedAt: "desc" }
       })
-      
+
       return userAchievements.map(ua => ({
         ...ua,
         unlockedAt: ua.unlockedAt.toISOString()
@@ -191,6 +191,119 @@ const resolvers = {
       return await prisma.achievement.findMany({
         orderBy:{ category:'asc' }
       })
+    },
+    getAnalyticsData: async (_, __, context) => {
+      if (!context.user) {
+        throw new Error("Not authenticated")
+      }
+
+      const userId = context.user.userId;
+      
+      // Get all interviews for the user
+      const interviews = await prisma.interview.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' }
+      });
+
+      const totalInterviews = interviews.length;
+      const avgScore = totalInterviews > 0
+        ? Math.round(interviews.reduce((sum, i) => sum + i.score, 0) / totalInterviews)
+        : 0;
+      const bestScore = totalInterviews > 0
+        ? Math.max(...interviews.map(i => i.score))
+        : 0;
+
+      // Calculate streak
+      let streak = 0;
+      if (interviews.length > 0) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        let currentDate = new Date(today);
+
+        for (let i = 0; i < interviews.length; i++) {
+          const interviewDate = new Date(interviews[i].createdAt);
+          interviewDate.setHours(0, 0, 0, 0);
+          const diffDays = Math.floor((currentDate - interviewDate) / (1000 * 60 * 60 * 24));
+
+          if (diffDays === 0 || diffDays === 1) {
+            if (diffDays === 1) {
+              streak++;
+              currentDate = new Date(interviewDate);
+            }
+          } else {
+            break;
+          }
+        }
+
+        const todayInterview = interviews.some(interview => {
+          const interviewDate = new Date(interview.createdAt);
+          interviewDate.setHours(0, 0, 0, 0);
+          return interviewDate.getTime() === today.getTime();
+        });
+
+        if (todayInterview) {
+          streak++;
+        }
+      }
+
+      // Monthly performance (last 12 months)
+      const monthlyPerformance = Array(12).fill(0);
+      const now = new Date();
+      interviews.forEach(interview => {
+        const monthDiff = (now.getFullYear() - interview.createdAt.getFullYear()) * 12 
+          + (now.getMonth() - interview.createdAt.getMonth());
+        if (monthDiff >= 0 && monthDiff < 12) {
+          monthlyPerformance[11 - monthDiff] += interview.score;
+        }
+      });
+
+      // Skill levels by difficulty (as percentage)
+      const easyInterviews = interviews.filter(i => i.difficulty === 'EASY');
+      const mediumInterviews = interviews.filter(i => i.difficulty === 'MEDIUM');
+      const hardInterviews = interviews.filter(i => i.difficulty === 'HARD');
+
+      console.log('📊 Analytics Debug:');
+      console.log('Easy interviews:', easyInterviews.length, 'scores:', easyInterviews.map(i => i.score));
+      console.log('Medium interviews:', mediumInterviews.length, 'scores:', mediumInterviews.map(i => i.score));
+      console.log('Hard interviews:', hardInterviews.length, 'scores:', hardInterviews.map(i => i.score));
+
+      // Calculate percentage scores (assuming max score per interview is around 50-100)
+      // We'll normalize to 0-100 scale
+      const calculatePercentage = (interviews) => {
+        if (interviews.length === 0) return 0;
+        const avgScore = interviews.reduce((sum, i) => sum + i.score, 0) / interviews.length;
+        // Normalize: assuming typical max score is 50, convert to percentage
+        return Math.min(100, Math.round((avgScore / 50) * 100));
+      };
+
+      const skillLevels = [
+        calculatePercentage(easyInterviews),
+        calculatePercentage(mediumInterviews),
+        calculatePercentage(hardInterviews)
+      ];
+
+      console.log('Calculated skillLevels:', skillLevels);
+
+      // Domain stats
+      const frontendInterviews = interviews.filter(i => i.domain === 'FRONTEND');
+      const backendInterviews = interviews.filter(i => i.domain === 'BACKEND');
+      const hrInterviews = interviews.filter(i => i.domain === 'HR');
+
+      const domainStats = [
+        frontendInterviews.length,
+        backendInterviews.length,
+        hrInterviews.length
+      ];
+
+      return {
+        totalInterviews,
+        avgScore,
+        bestScore,
+        streak,
+        monthlyPerformance,
+        skillLevels,
+        domainStats
+      };
     }
 
   },
@@ -457,7 +570,7 @@ const resolvers = {
         totalQuestion,
         totalScore,
         percentage,
-        newAchievements: newAchievements.map(ach=>({
+        newAchievements: newAchievements.map(ach => ({
           ...ach,
           createdAt: ach.createdAt.toISOString()
         }))

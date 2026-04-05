@@ -1,5 +1,9 @@
+import dotenv from "dotenv";
 import prisma from "../src/prismaClient.js";
 import fs from "fs";
+
+// Load environment variables
+dotenv.config();
 
 async function main() {
   const questions = JSON.parse(
