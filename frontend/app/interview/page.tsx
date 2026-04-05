@@ -38,6 +38,8 @@ export default function Interview() {
   const [feedbacks, setFeedbacks] = useState<any[]>([])
   const [timeElapsed, setTimeElapsed] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isListening, setIsListening] = useState(false)
+  const [recognition, setRecognition] = useState<any>(null)
 
   const [submitAnswer, { loading }] = useMutation<SubmitAnswerData>(SUBMIT_ANSWER)
 
@@ -55,6 +57,53 @@ export default function Interview() {
     setAnswers(new Array(data.questions.length).fill(""))
     setScores(new Array(data.questions.length).fill(0))
     setFeedbacks(new Array(data.questions.length).fill(null))
+
+    // Initialize Speech Recognition
+    if (typeof window !== 'undefined' && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
+      const recognitionInstance = new SpeechRecognition()
+      recognitionInstance.continuous = true
+      recognitionInstance.interimResults = true
+      recognitionInstance.lang = 'en-US'
+
+      recognitionInstance.onresult = (event: any) => {
+        let interimTranscript = ''
+        let finalTranscript = ''
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript + ' '
+          } else {
+            interimTranscript += transcript
+          }
+        }
+
+        if (finalTranscript) {
+          setAnswer(prev => prev + finalTranscript)
+        }
+      }
+
+      recognitionInstance.onerror = (event: any) => {
+        setIsListening(false)
+        
+        // Handle specific errors
+        if (event.error === 'not-allowed') {
+          alert('Microphone access denied. Please allow microphone permission in your browser settings.')
+        } else if (event.error === 'no-speech') {
+          console.log('No speech detected. Please try again.')
+        } else if (event.error !== 'network' && event.error !== 'aborted') {
+          console.log('Speech recognition error:', event.error)
+        }
+        // Silently ignore network and aborted errors as they're common and temporary
+      }
+
+      recognitionInstance.onend = () => {
+        setIsListening(false)
+      }
+
+      setRecognition(recognitionInstance)
+    }
 
     // Timer
     const timer = setInterval(() => {
@@ -157,6 +206,21 @@ export default function Interview() {
 
   const wordCount = answer.trim().split(/\s+/).filter(w => w.length > 0).length
 
+  const toggleVoiceInput = () => {
+    if (!recognition) {
+      alert('Voice recognition is not supported in your browser. Please use Chrome or Edge.')
+      return
+    }
+
+    if (isListening) {
+      recognition.stop()
+      setIsListening(false)
+    } else {
+      recognition.start()
+      setIsListening(true)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
       {/* Header */}
@@ -226,14 +290,43 @@ export default function Interview() {
                 {wordCount} {wordCount === 1 ? 'word' : 'words'}
               </span>
             </div>
-            <textarea
-              id="answer"
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-              rows={10}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition resize-none text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
-              placeholder="Start typing your answer here..."
-            />
+            <div className="relative">
+              <textarea
+                id="answer"
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                rows={10}
+                className="w-full px-4 py-3 pr-14 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition resize-none text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
+                placeholder="Start typing your answer here or click the mic to speak..."
+              />
+              <button
+                type="button"
+                onClick={toggleVoiceInput}
+                className={`absolute right-3 bottom-3 p-3 rounded-lg transition-all ${
+                  isListening 
+                    ? 'bg-red-500 hover:bg-red-600 animate-pulse' 
+                    : 'bg-indigo-500 hover:bg-indigo-600'
+                } text-white shadow-lg`}
+                title={isListening ? 'Stop recording' : 'Start voice input'}
+              >
+                {isListening ? (
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <rect x="6" y="6" width="8" height="8" rx="1" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z" />
+                    <path d="M5.5 9.643a.75.75 0 00-1.5 0V10c0 3.06 2.29 5.585 5.25 5.954V17.5h-1.5a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-1.5v-1.546A6.001 6.001 0 0016 10v-.357a.75.75 0 00-1.5 0V10a4.5 4.5 0 01-9 0v-.357z" />
+                  </svg>
+                )}
+              </button>
+            </div>
+            {isListening && (
+              <p className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center gap-2">
+                <span className="inline-block w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>
+                Recording... Speak clearly into your microphone
+              </p>
+            )}
           </div>
 
           {/* Progress Dots */}

@@ -119,7 +119,13 @@ export default function Dashboard() {
               </div>
               {isAdmin && (
                 <button onClick={()=>router.push('/admin')} > Admin Panel</button>
-              )}
+              )}  
+
+              <button
+               onClick={()=>router.push("/analytics")}
+               className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
+
+              >📊 Analytics</button>
               <button
                 onClick={() => router.push("/profile")}
                 className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
@@ -283,7 +289,7 @@ export default function Dashboard() {
                 min="3"
                 max="10"
                 value={count}
-                onChange={(e) => setCount(Number(e.target.value))}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCount(Number(e.target.value))}
                 className="w-full h-3 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer accent-indigo-600"
               />
               <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mt-2">

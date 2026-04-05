@@ -103,3 +103,18 @@ export const GET_ALL_ACHIEVEMENTS = gql`
   }
 }
 `;
+
+export const GET_ANALYTICS_DATA = gql`
+  query GetAnalyticsData {
+    getAnalyticsData {
+      totalInterviews
+      avgScore
+      bestScore
+      streak
+      monthlyPerformance
+      skillLevels
+      domainStats
+    }
+  }
+`;
+
