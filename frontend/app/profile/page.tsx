@@ -131,15 +131,21 @@ export default function Profile(){
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 border border-gray-100 dark:border-gray-700">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Total Interviews</p>
-                                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
+                                <p className="text-4xl font-bold text-gray-900 dark:text-white mt-2">
                                     {myStats?.getUserStats?.totalInterviews || '0'}
                                 </p>
+                                <div className="mt-3 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                    <div 
+                                        className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-500"
+                                        style={{ width: `${Math.min(100, (Number(myStats?.getUserStats?.totalInterviews) || 0) * 10)}%` }}
+                                    />
+                                </div>
                             </div>
-                            <div className="bg-blue-100 dark:bg-blue-900 rounded-full p-3">
+                            <div className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 rounded-full p-4 shadow-md">
                                 <svg className="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
@@ -147,15 +153,21 @@ export default function Profile(){
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 border border-gray-100 dark:border-gray-700">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Average Score</p>
-                                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
+                                <p className="text-4xl font-bold text-gray-900 dark:text-white mt-2">
                                     {myStats?.getUserStats?.avgScore || '0'}%
                                 </p>
+                                <div className="mt-3 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                    <div 
+                                        className="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full transition-all duration-500"
+                                        style={{ width: `${myStats?.getUserStats?.avgScore || 0}%` }}
+                                    />
+                                </div>
                             </div>
-                            <div className="bg-green-100 dark:bg-green-900 rounded-full p-3">
+                            <div className="bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900 dark:to-green-800 rounded-full p-4 shadow-md">
                                 <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                 </svg>
@@ -163,15 +175,21 @@ export default function Profile(){
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 border border-gray-100 dark:border-gray-700">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Current Streak</p>
-                                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
+                                <p className="text-4xl font-bold text-gray-900 dark:text-white mt-2">
                                     {myStats?.getUserStats?.streak || '0'} 🔥
                                 </p>
+                                <div className="mt-3 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                    <div 
+                                        className="bg-gradient-to-r from-orange-500 to-red-600 h-2 rounded-full transition-all duration-500 animate-pulse"
+                                        style={{ width: `${Math.min(100, (Number(myStats?.getUserStats?.streak) || 0) * 5)}%` }}
+                                    />
+                                </div>
                             </div>
-                            <div className="bg-orange-100 dark:bg-orange-900 rounded-full p-3">
+                            <div className="bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900 dark:to-orange-800 rounded-full p-4 shadow-md">
                                 <svg className="w-8 h-8 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                                 </svg>
@@ -181,8 +199,17 @@ export default function Profile(){
                 </div>
 
                 {/* Achievements Section */}
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">🏆 Achievements</h2>
+                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">🏆 Achievements</h2>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                            <span className="font-semibold text-indigo-600 dark:text-indigo-400">
+                                {achievementData?.getUserAchievements.length || 0}
+                            </span>
+                            {' / '}
+                            {allAchievementData?.getAllAchievements.length || 0} Unlocked
+                        </div>
+                    </div>
                     
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {allAchievementData?.getAllAchievements.map((achievement) => {
@@ -196,31 +223,35 @@ export default function Profile(){
                             return (
                                 <div
                                     key={achievement.id}
-                                    className={`p-4 rounded-xl border-2 transition-all ${
+                                    className={`p-4 rounded-xl border-2 transition-all transform hover:scale-105 ${
                                         isUnlocked
-                                            ? 'border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 shadow-md'
-                                            : 'border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 opacity-60'
+                                            ? 'border-yellow-400 bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 shadow-lg hover:shadow-xl'
+                                            : 'border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 opacity-60 hover:opacity-80'
                                     }`}
                                 >
                                     <div className="text-center">
-                                        <div className={`text-4xl mb-2 ${!isUnlocked && 'grayscale'}`}>
+                                        <div className={`text-5xl mb-3 transition-all ${!isUnlocked && 'grayscale'} ${isUnlocked && 'animate-bounce'}`}>
                                             {achievement.icon}
                                         </div>
-                                        <h3 className={`font-semibold text-sm ${
+                                        <h3 className={`font-bold text-sm mb-1 ${
                                             isUnlocked ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'
                                         }`}>
                                             {achievement.name}
                                         </h3>
-                                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                                        <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
                                             {achievement.description}
                                         </p>
                                         {isUnlocked && userAchievement && (
-                                            <p className="text-xs text-green-600 dark:text-green-400 mt-2 font-medium">
-                                                Unlocked {new Date(userAchievement.unlockedAt).toLocaleDateString()}
-                                            </p>
+                                            <div className="mt-2 pt-2 border-t border-yellow-200 dark:border-yellow-800">
+                                                <p className="text-xs text-green-600 dark:text-green-400 font-medium">
+                                                    ✓ {new Date(userAchievement.unlockedAt).toLocaleDateString()}
+                                                </p>
+                                            </div>
                                         )}
                                         {!isUnlocked && (
-                                            <p className="text-xs text-gray-400 mt-2">🔒 Locked</p>
+                                            <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600">
+                                                <p className="text-xs text-gray-400 font-medium">🔒 Locked</p>
+                                            </div>
                                         )}
                                     </div>
                                 </div>
